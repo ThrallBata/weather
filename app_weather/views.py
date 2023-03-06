@@ -1,29 +1,63 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.conf import settings
 
 from pyowm import OWM
 from pyowm.utils import config
 from pyowm.utils import timestamps
+from translate import Translator
+
+from .forms import LocateForm
 
 
 def index(request):
-    name = 'Hirt'
-    locate = 'Tomsk'
-    weather = get_weather(locate)
+    form = LocateForm(request.POST or None)
+    if request.method == 'POST':
+        if form.is_valid():
+            global locate
+            locate = form.cleaned_data.get("locate")
+            global weather
+            weather = get_result_weather(locate)
+
 
     data = {
-        'name': name,
         "weather": weather,
         'locate': locate,
+        'form': form,
     }
 
     return render(request, 'app_weather/index.html', data)
 
 
+def weather_locate(request):
+    if request.method == 'POST':
+        print('govno')
+        if form.is_valid():
+            print('Sperma')
+            global locate
+            locate = form.cleaned_data.get("locate")
+            global weather
+            weather = get_result_weather(locate)
+
+
+    data = {
+        "weather": weather,
+        'locate': locate,
+        'form': form,
+    }
+
+    return render(request, 'app_weather/index.html', data)
+
+
+def get_result_weather(locate):
+    locate_eu = get_translate_eu(locate)
+    weather = get_weather(locate_eu)
+
+    return weather
+
+
 def get_weather(locate):
     owm = OWM(settings.OPENWEATHER_API_KEY)
     mgr = owm.weather_manager()
-
     observation = mgr.weather_at_place(locate)
     w = observation.weather
 
@@ -31,3 +65,18 @@ def get_weather(locate):
                     'wind': w.wind(), 'humidity': w.humidity}
 
     return dict_weather
+
+
+def get_translate_eu(word: str) -> str:
+    translator = Translator(from_lang='ru', to_lang="en")
+    translation = translator.translate(word)
+
+    return translation
+
+
+locate = "Moscow"
+weather = get_weather(locate)
+
+
+
+

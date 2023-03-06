@@ -1,5 +1,12 @@
 {% extends "base.html" %}
 
 {% block content %}
-<h1>Ебать погода в {{locate}} {{weather.temperature.temp}}°C</h1>
+<h1>Ебать погода в городе {{locate}} {{weather.temperature.temp}}°C</h1>
+<form action="" method="POST">
+{% csrf_token %}
+{{ form.as_p }}
+<input type="Submit" name="submit" value="Submit"/>
+</form>
+
+</div>
 {% endblock %}
