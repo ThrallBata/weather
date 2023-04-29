@@ -7,8 +7,8 @@ from translate import Translator
 
 
 def get_result_weather(locate):
-    # locate_eu = get_translate_into_eu(locate)
-    weather = get_weather(locate)
+    locate_eu = get_translate_into_eu(locate)
+    weather = get_weather(locate_eu)
 
     return weather
 
@@ -29,18 +29,18 @@ def get_weather(locate):
 
     except Exception:
         return False
-#
-#
-# def get_translate_into_eu(word: str) -> str:
-#     translator = Translator(from_lang='ru', to_lang="en")
-#     translation = translator.translate(word)
-#
-#     return translation
-#
-#
-# def get_translate_into_ru(word: str) -> str:
-#     translator = Translator(from_lang='en', to_lang="ru")
-#     translation = translator.translate(word)
-#
-#     return translation
+
+
+def get_translate_into_eu(word: str) -> str:
+    translator = Translator(from_lang='ru', to_lang="en")
+    translation = translator.translate(word)
+
+    return translation
+
+
+def get_translate_into_ru(word: str) -> str:
+    translator = Translator(from_lang='en', to_lang="ru")
+    translation = translator.translate(word)
+
+    return translation
 

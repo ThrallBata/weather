@@ -7,6 +7,7 @@ from pyowm.utils import timestamps
 from translate import Translator
 
 from .forms import LocateForm
+from .weather import get_result_weather
 
 
 def index(request):
@@ -17,7 +18,6 @@ def index(request):
         if form.is_valid():
             data_dict['locate'] = form.cleaned_data.get("locate")
             data_dict['weather'] = get_result_weather(data_dict['locate'])
-            print(data_dict['weather'])
             if data_dict['weather'] == False:
                 data_dict['error'] = "Некорректно введен город!"
                 data_dict['locate'] = ""
@@ -33,61 +33,3 @@ def index(request):
 
     return render(request, 'app_weather/index.html', data)
 
-
-# def start_page(request):
-#     locate = "Moscow"
-#     weather = get_weather(locate)
-#     error = ''
-#
-#     form = LocateForm(request.POST or None)
-#     if request.method == 'POST':
-#         if form.is_valid():
-#             return redirect('index')
-#
-#     data = {
-#         "weather": weather,
-#         'locate': locate.title(),
-#         'form': form,
-#         "error": error,
-#     }
-#
-#     return render(request, 'app_weather/index.html', data)
-
-
-def get_result_weather(locate):
-    locate_eu = get_translate_into_eu(locate)
-    weather = get_weather(locate_eu)
-
-    return weather
-
-
-def get_weather(locate):
-    try:
-        owm = OWM(settings.OPENWEATHER_API_KEY)
-        mgr = owm.weather_manager()
-        observation = mgr.weather_at_place(locate)
-        w = observation.weather
-
-        status_ru = get_translate_into_ru(w.detailed_status)
-        status_ru_eu = status_ru + ' / ' + w.detailed_status
-        dict_weather = {'status': status_ru_eu, 'temperature': w.temperature('celsius'),
-                        'wind': w.wind(), 'humidity': w.humidity, }
-
-        return dict_weather
-
-    except Exception:
-        return False
-
-
-def get_translate_into_eu(word: str) -> str:
-    translator = Translator(from_lang='ru', to_lang="en")
-    translation = translator.translate(word)
-
-    return translation
-
-
-def get_translate_into_ru(word: str) -> str:
-    translator = Translator(from_lang='en', to_lang="ru")
-    translation = translator.translate(word)
-
-    return translation
