@@ -10,25 +10,25 @@ from .forms import LocateForm
 
 
 def index(request):
+    data_dict = {'locate': "Moscow", 'weather': get_result_weather('Moscow'), 'error': '', }
+
     form = LocateForm(request.POST or None)
     if request.method == 'POST':
         if form.is_valid():
-            global locate
-            locate = form.cleaned_data.get("locate")
-            global weather
-            weather = get_result_weather(locate)
-            if weather == False:
-                global error
-                error = "Некорректно введен город!"
-                locate = ""
+            data_dict['locate'] = form.cleaned_data.get("locate")
+            data_dict['weather'] = get_result_weather(data_dict['locate'])
+            print(data_dict['weather'])
+            if data_dict['weather'] == False:
+                data_dict['error'] = "Некорректно введен город!"
+                data_dict['locate'] = ""
             else:
-                error = ""
+                data_dict['error'] = ""
 
     data = {
-        "weather": weather,
-        'locate': locate.title(),
+        "weather": data_dict['weather'],
+        'locate': data_dict['locate'].title(),
         'form': form,
-        "error": error,
+        "error": data_dict['error'],
     }
 
     return render(request, 'app_weather/index.html', data)
@@ -71,7 +71,7 @@ def get_weather(locate):
         status_ru = get_translate_into_ru(w.detailed_status)
         status_ru_eu = status_ru + ' / ' + w.detailed_status
         dict_weather = {'status': status_ru_eu, 'temperature': w.temperature('celsius'),
-                    'wind': w.wind(), 'humidity': w.humidity, }
+                        'wind': w.wind(), 'humidity': w.humidity, }
 
         return dict_weather
 
@@ -91,9 +91,3 @@ def get_translate_into_ru(word: str) -> str:
     translation = translator.translate(word)
 
     return translation
-
-
-locate = "Moscow"
-weather = get_weather(locate)
-error = ''
-

@@ -1,4 +1,4 @@
-{% extends "base1.html" %}
+{% extends "app_weather/base.html" %}
 
 {% block content %}
 <div class="col-lg-8 mx-auto p-3 py-md-5">
@@ -9,7 +9,12 @@
   </header>
 
   <main>
+      {% if locate != '' %}
     <h1>Погода: {{locate}} —> {{weather.temperature.temp}}°C</h1>
+      {% else %}
+      <h1>Погода: </h1>
+      {%endif%}
+
        <div class="mb-5">
         <form action="" method="POST">
         {% csrf_token %}
@@ -43,7 +48,7 @@
     </div>
   </main>
   <footer class="pt-5 my-5 text-muted border-top">
-    Данные берутся с сервиса OpenWeatherMap.
+    Используются данные сервиса OpenWeatherMap.
   </footer>
 </div>
 {% endblock %}
